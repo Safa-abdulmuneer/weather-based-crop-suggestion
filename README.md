@@ -1,6 +1,7 @@
 # weather-based-crop-suggestion
 A smart decision-support web application that recommends the most suitable crops based on real-time weather conditions and soil type, helping farmers reduce crop failure, improve productivity, and support sustainable agriculture.
-🚀 Key Features
+
+ Key Features
 
 🌤️ Real-time weather fetching from OpenWeather API
 
