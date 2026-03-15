@@ -60,12 +60,7 @@ project911/
 - MySQL Server
 - pip
 
-### 1. Clone the Repository
 
-```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name/project911
-```
 
 ### 2. Install Dependencies
 
