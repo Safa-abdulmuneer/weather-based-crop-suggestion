@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <style>
+        /* Background Image */
+        body {
+            background: url('https://wallpaperaccess.com/full/3543885.jpg') no-repeat center center/cover;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Glassmorphism Card */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Heading */
+        h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        /* Input Fields */
+        .input-box {
+            position: relative;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #218838, #17a2b8);
+            transform: scale(1.05);
+        }
+
+        /* Links */
+        p {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        a {
+            color: #20c997;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Admin Login Button */
+        .admin-login {
+            background: linear-gradient(45deg, #dc3545, #e4606d);
+            margin-top: 10px;
+        }
+
+        .admin-login:hover {
+            background: linear-gradient(45deg, #c82333, #d43f52);
+        }
+
+        /* Popup Notification */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+
+        /* Green for Success */
+        .popup.success {
+            background-color: rgba(40, 167, 69, 0.9);
+            color: white;
+        }
+
+        /* Red for Error */
+        .popup.danger {
+            background-color: rgba(220, 53, 69, 0.9);
+            color: white;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="popup {{ category }}" id="popup">{{ message }}</div>
+            {% endfor %}
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    let popup = document.getElementById("popup");
+                    if (popup) {
+                        popup.style.display = "block";
+                        setTimeout(() => {
+                            popup.style.display = "none";
+                        }, 3000);
+                    }
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <h2>Sign In</h2>
+        <form action="/login" method="POST">
+            <!-- Add CSRF Token Here -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="input-box">
+                <input type="email" id="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-box">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+        <button class="admin-login" onclick="window.location.href='/admin_login'">Admin Login</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginForm = document.querySelector("form");
+            const loginBtn = document.getElementById("loginBtn");
+
+            loginForm.addEventListener("submit", function (e) {
+                loginBtn.innerText = "Logging in...";
+                loginBtn.style.opacity = "0.7";
+                loginBtn.disabled = true;
+            });
+        });
+    </script>
+
+</body>
+</html>

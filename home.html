@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Crop Suggestion</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            z-index: 1000;
+        }
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 20px;
+            transition: 0.3s;
+        }
+        .navbar a:hover {
+            color: #20c997;
+        }
+        .container {
+            margin-top: 80px;
+            text-align: center;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #20c997;
+            animation: fadeIn 2s ease-in-out;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .btn {
+            background: #20c997;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background: #17a288;
+            transform: scale(1.05);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">🌾 Crop Suggestion</div>
+        <div>
+            {% if 'user_id' in session %}
+                <a href="{{ url_for('weatherinput') }}">Dashboard</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('signup') }}">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome to Smart Crop Suggestion</h1>
+        <p>Get the best crop recommendations based on weather and soil conditions.</p>
+        <a href="{{ url_for('weatherinput') }}" class="btn">🌍 Get Started</a>
+    </div>
+</body>
+</html>

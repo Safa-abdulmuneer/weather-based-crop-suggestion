@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previous Suggestions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://wallpaperaccess.com/full/3543885.jpg') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 50px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .table-container {
+            max-height: 300px; /* Scrollable area */
+            overflow-y: auto;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid white;
+            color: white;
+            text-align: center;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        a {
+            display: block;
+            margin-top: 15px;
+            color: #20c997;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Previous Crop Suggestions</h2>
+        {% if suggestions %}
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>Crop Name 🌾</th>
+                    <th>Suggested At ⏳</th>
+                </tr>
+                {% for suggestion in suggestions %}
+                <tr>
+                    <td>{{ suggestion.crop_name }}</td>
+                    <td>{{ suggestion.suggested_at }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% else %}
+            <p>No previous suggestions found.</p>
+        {% endif %}
+        <a href="/weatherinput">⬅ Back</a>
+    </div>
+</body>
+</html>

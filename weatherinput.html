@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Input</title>
+    <style>
+        /* Background Image */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            overflow-y: auto;
+            transition: background 0.5s ease-in-out;
+            background: url('https://wallpaperaccess.com/full/3543885.jpg') no-repeat center center/cover;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar .logo {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .profile-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            min-width: 150px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 10px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .dropdown-content a:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .profile-dropdown:hover .dropdown-content { display: block; }
+
+        /* Container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 120px;
+            width: 100%;
+            padding-bottom: 50px;
+        }
+
+        /* Card Styling */
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+            width: 420px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            color: #20c997;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            margin: 10px 0;
+        }
+
+        input {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.7); }
+
+        button {
+            border: none;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #218838, #17a2b8);
+            transform: scale(1.05);
+        }
+    </style>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                document.getElementById("location-status").innerText = "🔄 Fetching location...";
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            document.getElementById("latitude").value = position.coords.latitude;
+            document.getElementById("longitude").value = position.coords.longitude;
+            document.getElementById("location-status").innerText = "✅ Location acquired!";
+            document.getElementById("location-form").submit(); // Auto-submit when location is fetched
+        }
+
+        function showError(error) {
+            document.getElementById("location-status").innerText = "❌ Error getting location.";
+            alert("Error: " + error.message);
+        }
+    </script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">Crop Suggestion</div>
+        <div class="menu">
+            <div class="profile-dropdown">
+                <button class="profile-btn">Profile ⬇</button>
+                <div class="dropdown-content">
+                    <a href="/previous_suggestions">Previous Suggestions</a>
+                    <a href="/about">About</a>
+                    <a href="/logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Enter Location</h2>
+            <button onclick="getLocation()">📍 Use My Location</button>
+            <p id="location-status"></p>
+
+            <form id="location-form" action="/weatherinput" method="POST">
+                <!-- Add CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="city" placeholder="Enter City Name">
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+                <input type="text" name="soil" placeholder="Enter Soil Type (Optional)">
+                <button type="submit">🌍 Get Weather</button>
+            </form>
+        </div>
+
+        {% if weather %}
+        <div class="card">
+            <h2>Weather Information</h2>
+            <p>🌍 City: {{ weather.city }}</p>
+            <p>🌡 Temperature: {{ weather.temperature }}°C</p>
+            <p>☁ Condition: {{ weather.description }}</p>
+            <p>💧 Humidity: {{ weather.humidity }}%</p>
+
+            {% if avg_rainfall %}
+            <p>🌧 Average Rainfall: {{ avg_rainfall }} mm</p>
+            {% endif %}
+
+            {% if soil %}
+            <p>🌱 Soil Type: {{ soil }}</p>
+            {% endif %}
+
+            <form action="/crop_suggestion" method="POST">
+                <!-- Add CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="avg_rainfall" value="{{ avg_rainfall }}">
+                <input type="hidden" name="soil" value="{{ soil }}">
+                <button type="submit">🌾 Get Crop Suggestions</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

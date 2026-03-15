@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: url('https://wallpaperaccess.com/full/3543885.jpg') no-repeat center center/cover;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            margin: 2rem auto;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 95%;
+        }
+
+        .nav-button {
+            margin: 0 10px 10px 0;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .nav-button.active {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .section-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section-card.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .data-table {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            padding: 15px;
+        }
+
+        .data-table td {
+            padding: 12px;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .scroll-box {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: rgba(40, 40, 40, 0.95);
+            color: #fff;
+            border-radius: 12px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-white"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+            <a href="/admin_logout" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+
+        <div class="navigation mb-4">
+            <button class="btn btn-primary nav-button active" onclick="showSection(event, 'users-section')">
+                <i class="fas fa-users me-2"></i>View Users
+            </button>
+            <button class="btn btn-warning nav-button" onclick="showSection(event, 'crops-section')">
+                <i class="fas fa-seedling me-2"></i>Manage Crops
+            </button>
+        </div>
+
+        <!-- Users Section - Modified to remove actions -->
+        <div id="users-section" class="section-card active">
+            <h3 class="text-white mb-4"><i class="fas fa-user-friends me-2"></i>Registered Users</h3>
+            <div class="scroll-box">
+                <table class="data-table w-100">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <!-- Removed Actions column header -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if users %}
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <!-- Removed View and Delete buttons -->
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-white py-4">No users found</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Crops Section (unchanged) -->
+        <div id="crops-section" class="section-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-white"><i class="fas fa-leaf me-2"></i>Crop Management</h3>
+                <button class="btn btn-success" onclick="openCropModal()">
+                    <i class="fas fa-plus me-2"></i>Add New Crop
+                </button>
+            </div>
+            
+            <div class="scroll-box">
+                <table class="data-table w-100">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Temperature Range</th>
+                            <th>Rainfall Range</th>
+                            <th>Soil Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if crops %}
+                            {% for crop in crops %}
+                            <tr>
+                                <td>{{ crop.crop_id }}</td>
+                                <td>{{ crop.crop_name }}</td>
+                                <td>{{ crop.temp_min }}°C - {{ crop.temp_max }}°C</td>
+                                <td>{{ crop.rainfall_min }}mm - {{ crop.rainfall_max }}mm</td>
+                                <td>{{ crop.soil_type }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning me-2" 
+                                            onclick="openCropModal(
+                                                '{{ crop.crop_id }}',
+                                                '{{ crop.crop_name }}',
+                                                '{{ crop.temp_min }}',
+                                                '{{ crop.temp_max }}',
+                                                '{{ crop.rainfall_min }}',
+                                                '{{ crop.rainfall_max }}',
+                                                '{{ crop.avg_rainfall }}',
+                                                '{{ crop.soil_type }}',
+                                                '{{ crop.description }}'
+                                            )">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <form action="/delete_crop/{{ crop.crop_id }}" method="POST" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                onclick="return confirm('Delete this crop permanently?')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-white py-4">No crops found</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crop Modal (unchanged) -->
+    <div class="modal fade" id="cropModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crop Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="cropForm" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="modal-body">
+                        <input type="hidden" id="crop_id" name="crop_id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Crop Name</label>
+                                <input type="text" class="form-control" name="crop_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Soil Type</label>
+                                <input type="text" class="form-control" name="soil_type" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Min Temp (°C)</label>
+                                <input type="number" step="0.1" class="form-control" name="temp_min" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Max Temp (°C)</label>
+                                <input type="number" step="0.1" class="form-control" name="temp_max" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Avg Rainfall (mm)</label>
+                                <input type="number" step="0.1" class="form-control" name="avg_rainfall" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Min Rainfall (mm)</label>
+                                <input type="number" step="0.1" class="form-control" name="rainfall_min" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Max Rainfall (mm)</label>
+                                <input type="number" step="0.1" class="form-control" name="rainfall_max" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" name="description" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showSection(event, sectionId) {
+            document.querySelectorAll('.section-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function openCropModal(id = '', ...args) {
+            const modal = new bootstrap.Modal('#cropModal');
+            const form = document.getElementById('cropForm');
+            
+            if(id) {
+                form.action = `/edit_crop/${id}`;
+                modal._element.querySelector('.modal-title').textContent = 'Edit Crop';
+                const fields = {
+                    'crop_name': args[0],
+                    'temp_min': args[1],
+                    'temp_max': args[2],
+                    'rainfall_min': args[3],
+                    'rainfall_max': args[4],
+                    'avg_rainfall': args[5],
+                    'soil_type': args[6],
+                    'description': args[7]
+                };
+                
+                Object.entries(fields).forEach(([name, value]) => {
+                    const field = form.querySelector(`[name="${name}"]`);
+                    if (field) field.value = value;
+                });
+            } else {
+                form.action = '/add_crop';
+                modal._element.querySelector('.modal-title').textContent = 'Add New Crop';
+                form.reset();
+            }
+            
+            modal.show();
+        }
+
+        // Initialize with Users section
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.nav-button').click();
+        });
+    </script>
+</body>
+</html>

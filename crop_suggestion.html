@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Suggestions</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin: 50px auto;
+            width: 80%;
+        }
+        .heading {
+            font-size: 36px;
+            font-weight: bold;
+            color: #20c997;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .crop-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            justify-items: center;
+        }
+        .crop-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            width: 280px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+        }
+        .crop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        .crop-card img {
+            width: 100%;
+            height: 180px;
+            border-radius: 10px;
+            object-fit: cover;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .crop-card h3 {
+            margin: 10px 0;
+            font-size: 22px;
+            color: #fff;
+        }
+        .crop-card p {
+            font-size: 14px;
+            color: #ddd;
+            margin-bottom: 5px;
+        }
+        .btn {
+            background: #20c997;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 30px;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #17a288;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="heading">Recommended Crops</h1>
+
+        {% if suitable_crops %}
+        <div class="crop-container">
+            {% for crop in suitable_crops %}
+            <div class="crop-card">
+                <img class="crop-image" src="{{ crop.image_urls[0] }}" 
+                     data-images="{{ crop.image_urls|join(',') }}" 
+                     alt="{{ crop.name }}" 
+                     onmouseover="startImageChange(this)" 
+                     onmouseout="resetImage(this)">
+                <h3>{{ crop.name }}</h3>
+                <h3>{{ crop.crop_name }}</h3>  <!-- Use crop.crop_name instead of crop.name -->
+                <p>{{ crop.description }}</p>  <!-- Ensure the description is properly referenced -->
+                <p>🌡 Temp: {{ crop.temp_min }}°C - {{ crop.temp_max }}°C</p>
+                <p>💧 Rainfall: {{ crop.rainfall_min }} mm - {{ crop.rainfall_max }} mm</p>
+                <p>🪵 Soil: {{ crop.soil_type }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="font-size: 18px; margin-top: 20px;">🚫 No suitable crops found for the current weather conditions.</p>
+        {% endif %}
+
+        <a href="{{ url_for('weatherinput') }}" class="btn">🔙 Back to Weather Input</a>
+    </div>
+
+    <script>
+        function startImageChange(imgElement) {
+            let images = imgElement.getAttribute("data-images").split(",");
+            let index = 0;
+
+            imgElement.dataset.timer = setInterval(() => {
+                index = (index + 1) % images.length;
+                imgElement.src = images[index];
+            }, 1000); // Change image every second
+        }
+
+        function resetImage(imgElement) {
+            clearInterval(imgElement.dataset.timer);
+            imgElement.src = imgElement.getAttribute("data-images").split(",")[0];
+        }
+    </script>
+
+</body>
+</html>

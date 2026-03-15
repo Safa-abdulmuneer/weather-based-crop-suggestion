@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign Up</title>
+    <style>
+        /* Background Image */
+        body {
+            background: url('https://wallpaperaccess.com/full/3543885.jpg') no-repeat center center/cover;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Glassmorphism Card */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Heading */
+        h2 {
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        /* Input Fields */
+        .input-box {
+            position: relative;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: linear-gradient(45deg, #ff6b6b, #f06595);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #e63946, #d6336c);
+            transform: scale(1.05);
+        }
+
+        /* Signup Link */
+        p {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        a {
+            color: #f06595;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Popup Notification */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            animation: fadeOut 3s ease-in-out forwards;
+        }
+
+        /* Green for Success */
+        .popup.success {
+            background-color: rgba(40, 167, 69, 0.9);
+            color: white;
+        }
+
+        /* Red for Error */
+        .popup.danger {
+            background-color: rgba(220, 53, 69, 0.9);
+            color: white;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+    <script>
+        function validatePassword() {
+            let password = document.getElementById("password").value;
+            let confirmPassword = document.getElementById("confirm_password").value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="popup {{ category }}" id="popup">{{ message }}</div>
+            {% endfor %}
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    let popup = document.getElementById("popup");
+                    if (popup) {
+                        popup.style.display = "block";
+                        setTimeout(() => {
+                            popup.style.display = "none";
+                        }, 3000); // Auto-hide after 3 seconds
+                    }
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form action="/signup" method="POST" onsubmit="return validatePassword()">
+            <!-- Add CSRF Token for Flask-WTF/Flask-SeaSurf -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="input-box">
+                <input type="text" name="name" placeholder="Full Name" required>
+            </div>
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-box">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <div class="input-box">
+                <input type="password" id="confirm_password" placeholder="Confirm Password" required>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+
+</body>
+</html>
