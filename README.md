@@ -194,9 +194,6 @@ app.secret_key = os.environ.get("SECRET_KEY")
 
 ---
 
-## 📸 Screenshots
-
-> *(Add screenshots of the home page, weather input, crop suggestion results, and admin dashboard here)*
 
 ---
 
